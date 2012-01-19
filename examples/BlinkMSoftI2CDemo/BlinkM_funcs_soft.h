@@ -9,22 +9,37 @@
 
 int errcnt;
 
-static void BlinkM_begin() 
-{
-    // nothing to do here yet
-}
+#include "SoftI2CMaster.h"
 
-//
-static void BlinkM_beginWithPower(byte pwrpin, byte gndpin) 
+SoftI2CMaster i2c = SoftI2CMaster();
+
+
+// set which arbitrary I/O pins will be "power" and "ground" for the BlinkM
+static void BlinkM_setPowerPins(byte pwrpin, byte gndpin) 
 {
     pinMode(pwrpin, OUTPUT);
     pinMode(gndpin, OUTPUT);
     digitalWrite(pwrpin, HIGH);
     digitalWrite(gndpin, LOW);
+    delay(10); // wait for power to stabilize
 }
 
+// set which arbitrary I/O pins will be BlinkMs SCL and SDA
+// note, this sets the internal pull-up resistors
+static void BlinkM_begin( byte sclpin, byte sdapin )
+{
+    i2c.setPins( sclPin,sdaPin, true );
+}
+
+// start up a BlinkM with four arbitrary I/O pins
+static void BlinkM_begin( byte sclpin, byte sdapin, byte pwrpin, byte gndpin)
+{
+    BlinkM_setPowerPins( pwrpin, gndpin );
+    i2c.setPins( sclPin,sdaPin, true );
+}
 
 // -----------------------------------------------------------------------------
+// many BlinkM commands are 3 arguments in length, here's a generalized form
 static void BlinkM_sendCmd3( uint8_t addr, uint8_t c, uint8_t a1, uint8_t a2, uint8_t a3 )
 {
     if( i2c.beginTransmission( addr ) == 0 ) {
@@ -38,6 +53,7 @@ static void BlinkM_sendCmd3( uint8_t addr, uint8_t c, uint8_t a1, uint8_t a2, ui
     i2c.endTransmission();
 }
 
+// other BlinkM commands have a single argument
 static void BlinkM_sendCmd1( uint8_t addr, uint8_t c, uint8_t a1)
 {
     if( i2c.beginTransmission( addr ) == 0 ) {

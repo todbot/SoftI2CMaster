@@ -18,19 +18,18 @@ class SoftI2CMaster
 
 private:
   // per object data
-  uint8_t _sdaPin;
   uint8_t _sclPin;
-  uint8_t _sdaBitMask;
+  uint8_t _sdaPin;
   uint8_t _sclBitMask;
-  volatile uint8_t *_sdaPortReg;
+  uint8_t _sdaBitMask;
   volatile uint8_t *_sclPortReg;
-  volatile uint8_t *_sdaDirReg;
+  volatile uint8_t *_sdaPortReg;
   volatile uint8_t *_sclDirReg;
+  volatile uint8_t *_sdaDirReg;
 
   uint8_t usePullups;
   
   // private methods
-  void setPins(uint8_t sdaPin, uint8_t sclPin, uint8_t usePullups);
 
   void i2c_writebit( uint8_t c );
   uint8_t i2c_readbit(void);
@@ -43,8 +42,11 @@ private:
   
 public:
   // public methods
-  SoftI2CMaster(uint8_t sdaPin, uint8_t sclPin);
-  SoftI2CMaster(uint8_t sdaPin, uint8_t sclPin, uint8_t usePullups);
+  SoftI2CMaster();
+  SoftI2CMaster(uint8_t sclPin, uint8_t sdaPin);
+  SoftI2CMaster(uint8_t sclPin, uint8_t sdaPin, uint8_t usePullups);
+
+  void setPins(uint8_t sclPin, uint8_t sdaPin, uint8_t usePullups);
 
   uint8_t beginTransmission(uint8_t address);
   uint8_t beginTransmission(int address);

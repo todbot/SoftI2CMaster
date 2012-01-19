@@ -9,18 +9,13 @@
 
 const boolean testingI2CReads = true;
 
-// Choose any pins you want.  The pins below let you plug a BlinkM directly in
+// Choose any pins you want.  The pins below let you plug in a BlinkM directly 
 const byte sclPin = 7;  // digital pin 7 wired to 'c' on BlinkM
 const byte sdaPin = 6;  // digital pin 6 wired to 'd' on BlinkM
 const byte pwrPin = 5;  // digital pin 5 wired to '+' on BlinkM
 const byte gndPin = 4;  // digital pin 4 wired to '-' on BlinkM
 
 #include "SoftI2CMaster.h"
-SoftI2CMaster i2c = SoftI2CMaster( sdaPin,sclPin );
-// or if you want to use your own external pullup resistors
-//SoftI2CMaster i2c = SoftI2CMaster( sdaPin,sclPin, false );
-
-// must define "i2c" before including BlinkM_funcs_soft.h
 #include "BlinkM_funcs_soft.h"
 
 
@@ -32,9 +27,10 @@ void setup()
   Serial.begin( 19200 );
   Serial.println("BlinkMSoftI2CDemo");
   
-  BlinkM_beginWithPower( pwrPin, gndPin );
-  delay(100);
+  BlinkM_begin( sclPin, sdaPin, pwrPin, gndPin );
  
+  delay(100);
+
   BlinkM_off(0);
   BlinkM_setFadeSpeed( blinkm_addr, 5);
 
@@ -48,8 +44,13 @@ void setup()
   if( testingI2CReads ) { 
     Serial.print("BlinkM version: ");
     int num = BlinkM_getVersion( blinkm_addr );
-    Serial.print( (char)(num>>8) ); 
-    Serial.println( (char)(num&0xff) );
+    char major_version = (char)(num>>8);
+    char minor_version = (char)(num&0xff);
+    Serial.print( major_version );
+    Serial.println( minor_version );
+    if( major_version == -1 ) {
+        Serial.println("\nERROR: couldn't find a BlinkM\n");
+    }
   }
 }
 
