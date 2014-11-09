@@ -4,7 +4,8 @@
  *                        
  *
  * 2010 Tod E. Kurt, http://todbot.com/blog/
- * 
+ * 2014, by Testato: update library and examples for follow Wire’s API of Arduino IDE 1.x
+ *
  */
 
 int errcnt;
@@ -46,10 +47,10 @@ static void BlinkM_sendCmd3( uint8_t addr, uint8_t c, uint8_t a1, uint8_t a2, ui
         ++errcnt;
         //Serial.println( errcnt);  // FIXME
     }    
-    i2c.send( c );
-    i2c.send( a1 );
-    i2c.send( a2 );
-    i2c.send( a3 );
+    i2c.write( c );
+    i2c.write( a1 );
+    i2c.write( a2 );
+    i2c.write( a3 );
     i2c.endTransmission();
 }
 
@@ -60,14 +61,14 @@ static void BlinkM_sendCmd1( uint8_t addr, uint8_t c, uint8_t a1)
         ++errcnt;
         //Serial.println( errcnt); // FIXME
     }    
-    i2c.send( c );
-    i2c.send( a1 );
+    i2c.write( c );
+    i2c.write( a1 );
 }
 
 static void BlinkM_stopScript(uint8_t addr)
 {
     i2c.beginTransmission( addr );
-    i2c.send( 'o' );
+    i2c.write( 'o' );
     i2c.endTransmission();
 }
 
@@ -97,12 +98,12 @@ static void BlinkM_off(uint8_t addr)
 static int BlinkM_getVersion(byte addr)
 {
     i2c.beginTransmission( addr );
-    i2c.send( 'Z' );
+    i2c.write( 'Z' );
     i2c.endTransmission();
 
     i2c.requestFrom( addr );  
-    uint8_t major_ver = i2c.receive();
-    uint8_t minor_ver = i2c.receiveLast();
+    uint8_t major_ver = i2c.read();
+    uint8_t minor_ver = i2c.readLast();
     i2c.endTransmission();
     return (major_ver<<8) + minor_ver;
 }
@@ -111,13 +112,13 @@ static int BlinkM_getVersion(byte addr)
 static void BlinkM_getRGBColor(byte addr, byte* r, byte* g, byte* b)
 {
     i2c.beginTransmission(addr);
-    i2c.send('g');
+    i2c.write('g');
     i2c.endTransmission();
     
     i2c.requestFrom( addr );
-    *r = i2c.receive();
-    *g = i2c.receive();
-    *b = i2c.receiveLast();
+    *r = i2c.read();
+    *g = i2c.read();
+    *b = i2c.readLast();
     i2c.endTransmission();
 }
 

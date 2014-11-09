@@ -4,7 +4,8 @@
  *
  *
  * 2010 Tod E. Kurt, http://todbot.com/blog/
- *  
+ * 2014, by Testato: update library and examples for follow Wire’s API of Arduino IDE 1.x
+ *
  */
 
 const boolean testingI2CReads = true;
@@ -25,7 +26,7 @@ byte blinkm_addr = 9;
 void setup()
 {
   Serial.begin( 19200 );
-  Serial.println("BlinkMSoftI2CDemo");
+  Serial.println(F("BlinkMSoftI2CDemo"));
   
   BlinkM_begin( sclPin, sdaPin, pwrPin, gndPin );
  
@@ -42,14 +43,14 @@ void setup()
   }
   
   if( testingI2CReads ) { 
-    Serial.print("BlinkM version: ");
+    Serial.print(F("BlinkM version: "));
     int num = BlinkM_getVersion( blinkm_addr );
     char major_version = (char)(num>>8);
     char minor_version = (char)(num&0xff);
     Serial.print( major_version );
     Serial.println( minor_version );
     if( major_version == -1 ) {
-        Serial.println("\nERROR: couldn't find a BlinkM\n");
+        Serial.println(F("\nERROR: couldn't find a BlinkM\n"));
     }
   }
 }
@@ -60,7 +61,7 @@ void loop()
   byte g = random(255);
   byte b = random(255);
   
-  Serial.print("Setting r,g,b:"); Serial.print(r,HEX);
+  Serial.print(F("Setting r,g,b:")); Serial.print(r,HEX);
   Serial.print(",");      Serial.print(g,HEX);
   Serial.print(",");      Serial.println(b,HEX);
   
@@ -85,7 +86,7 @@ void showCurrentColor()
   byte r,g,b;
   BlinkM_getRGBColor( blinkm_addr, &r,&g,&b);
 
-  Serial.print("        r,g,b:"); Serial.print(r,HEX);
+  Serial.print(F("        r,g,b:")); Serial.print(r,HEX);
   Serial.print(",");      Serial.print(g,HEX);
   Serial.print(",");      Serial.println(b,HEX);
 }
