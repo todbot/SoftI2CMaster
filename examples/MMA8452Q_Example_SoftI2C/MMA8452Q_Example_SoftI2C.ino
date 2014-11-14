@@ -81,11 +81,11 @@ void setup()
   if (c == 0x2A) // WHO_AM_I should always be 0x2A
   {  
     initMMA8452(scale, dataRate);  // init the accelerometer if communication is good
-    Serial.println("MMA8452Q is online...");
+    Serial.println(F("MMA8452Q is online..."));
   }
   else
   {
-    Serial.print("Could not connect to MMA8452Q: 0x");
+    Serial.print(F("Could not connect to MMA8452Q: 0x"));
     Serial.println(c, HEX);
     while (1)  // Loop forever if communication doesn't happen
       ;
@@ -193,24 +193,24 @@ void portraitLandscapeHandler()
   switch((pl&0x06)>>1)  // Check on the LAPO[1:0] bits
   {
     case 0:
-      Serial.print("Portrait up, ");
+      Serial.print(F("Portrait up, "));
       break;
     case 1:
-      Serial.print("Portrait Down, ");
+      Serial.print(F("Portrait Down, "));
       break;
     case 2:
-      Serial.print("Landscape Right, ");
+      Serial.print(F("Landscape Right, "));
       break;
     case 3:
-      Serial.print("Landscape Left, ");
+      Serial.print(F("Landscape Left, "));
       break;
   }
   if (pl&0x01)  // Check the BAFRO bit
-    Serial.print("Back");
+    Serial.print(F("Back"));
   else
-    Serial.print("Front");
+    Serial.print(F("Front"));
   if (pl&0x40)  // Check the LO bit
-    Serial.print(", Z-tilt!");
+    Serial.print(F(", Z-tilt!"));
   Serial.println();
 }
 
@@ -276,15 +276,15 @@ void MMA8452Active()
 void readRegisters(byte address, int i, byte * dest) 
 {
     i2c.beginTransmission( MMA8452_ADDRESS );
-    i2c.send( address );
+    i2c.write( address );
     i2c.endTransmission();
 
     i2c.requestFrom( MMA8452_ADDRESS );
     int j;
     for( j=0; j<i-1; j++) {
-        dest[j] = i2c.receive();
+        dest[j] = i2c.read();
     }
-    dest[j+1] = i2c.receiveLast();
+    dest[j+1] = i2c.readLast();
     i2c.endTransmission();
 
 }
@@ -295,11 +295,11 @@ byte readRegister(uint8_t address)
     byte data;
   
     i2c.beginTransmission( MMA8452_ADDRESS );
-    i2c.send( address );
+    i2c.write( address );
     i2c.endTransmission();
 
     i2c.requestFrom( MMA8452_ADDRESS );
-    data = i2c.receiveLast();
+    data = i2c.readLast();
     i2c.endTransmission();
 
     return data;
@@ -310,8 +310,8 @@ byte readRegister(uint8_t address)
 void writeRegister(unsigned char address, unsigned char data)
 {
     i2c.beginTransmission( MMA8452_ADDRESS );
-    i2c.send( address );
-    i2c.send( data );
+    i2c.write( address );
+    i2c.write( data );
     i2c.endTransmission();
 }
 

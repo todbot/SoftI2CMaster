@@ -6,6 +6,9 @@
  *
  * This code takes some tricks from:
  *  http://codinglab.blogspot.com/2008/10/i2c-on-avr-using-bit-banging.html
+ *
+ * 2014, by Testato: update library and examples for follow Wire’s API of Arduino IDE 1.x
+ *
  */
 
 #if (ARDUINO >= 100)
@@ -139,7 +142,7 @@ uint8_t SoftI2CMaster::endTransmission(void)
 // must be called in:
 // slave tx event callback
 // or after beginTransmission(address)
-uint8_t SoftI2CMaster::send(uint8_t data)
+uint8_t SoftI2CMaster::write(uint8_t data)
 {
     return i2c_write(data);
 }
@@ -147,27 +150,27 @@ uint8_t SoftI2CMaster::send(uint8_t data)
 // must be called in:
 // slave tx event callback
 // or after beginTransmission(address)
-void SoftI2CMaster::send(uint8_t* data, uint8_t quantity)
+void SoftI2CMaster::write(uint8_t* data, uint8_t quantity)
 {
     for(uint8_t i = 0; i < quantity; ++i){
-        send(data[i]);
+        write(data[i]);
     }
 }
 
 // must be called in:
 // slave tx event callback
 // or after beginTransmission(address)
-void SoftI2CMaster::send(char* data)
+void SoftI2CMaster::write(char* data)
 {
-    send((uint8_t*)data, strlen(data));
+    write((uint8_t*)data, strlen(data));
 }
 
 // must be called in:
 // slave tx event callback
 // or after beginTransmission(address)
-void SoftI2CMaster::send(int data)
+void SoftI2CMaster::write(int data)
 {
-    send((uint8_t)data);
+    write((uint8_t)data);
 }
 
 //--------------------------------------------------------------------
@@ -307,19 +310,19 @@ uint8_t SoftI2CMaster::i2c_read( uint8_t ack )
 }
 
 // FIXME: this isn't right, surely
-uint8_t SoftI2CMaster::receive( uint8_t ack )
+uint8_t SoftI2CMaster::read( uint8_t ack )
 {
   return i2c_read( ack );
 }
 
 //
-uint8_t SoftI2CMaster::receive()
+uint8_t SoftI2CMaster::read()
 {
     return i2c_read( I2C_ACK );
 }
 
 //
-uint8_t SoftI2CMaster::receiveLast()
+uint8_t SoftI2CMaster::readLast()
 {
     return i2c_read( I2C_NAK );
 }

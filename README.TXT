@@ -2,6 +2,8 @@
 SoftI2CMaster
 
 2010-2012, Tod E. Kurt, http://todbot.com/blog/
+2014, by Testato: update library and examples for follow Wire’s API of Arduino IDE 1.x
+
 
 SoftI2CMaster is an Arduino library that implements
 a simple "bit-bang" software-only I2C (aka "TWI") Master.
