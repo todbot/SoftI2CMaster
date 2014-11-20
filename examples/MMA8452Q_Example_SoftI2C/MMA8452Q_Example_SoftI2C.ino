@@ -42,7 +42,7 @@
 //const int sclPin = A5;
 const int sdaPin = 4;
 const int sclPin = 5;
-SoftI2CMaster i2c = SoftI2CMaster( sdaPin,sclPin, 0 );
+SoftI2CMaster i2c = SoftI2CMaster( sclPin, sdaPin, 0 );
 
 #define SA0 1  // Breakout board defaults to 1, set to 0 if SA0 jumper is set
 #if SA0
