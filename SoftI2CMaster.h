@@ -56,7 +56,7 @@ public:
   void write(uint8_t*, uint8_t);
   void write(int);
   void write(char*);
-
+  void begin(void) {return;};
   uint8_t requestFrom(int address);
   uint8_t requestFrom(uint8_t address);
   uint8_t read( uint8_t ack );
