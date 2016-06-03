@@ -53,15 +53,18 @@ public:
   uint8_t beginTransmission(int address);
   uint8_t endTransmission(void);
   uint8_t write(uint8_t);
-  void write(uint8_t*, uint8_t);
-  void write(int);
-  void write(char*);
+  uint8_t write(uint8_t*, uint8_t);
+  uint8_t write(int);
+  uint8_t write(char*);
   void begin(void) {return;};
   uint8_t requestFrom(int address);
   uint8_t requestFrom(uint8_t address);
+  uint8_t requestFrom(uint8_t address, uint8_t l);
   uint8_t read( uint8_t ack );
   uint8_t read();
   uint8_t readLast();
+
+  bool available();
 
 };
 
