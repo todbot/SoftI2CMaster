@@ -19,7 +19,7 @@
 #include <util/delay.h>
 #include <string.h>
 
-#define  i2cbitdelay 100
+#define  i2cbitdelay 150
 
 #define  I2C_ACK  1 
 #define  I2C_NAK  0
@@ -183,6 +183,24 @@ uint8_t SoftI2CMaster::write(int data)
     return write((uint8_t)data);
 }
 
+
+// FIXME: this isn't right, surely
+uint8_t SoftI2CMaster::read( uint8_t ack )
+{
+  return i2c_read( ack );
+}
+
+//
+uint8_t SoftI2CMaster::read()
+{
+    return i2c_read( I2C_ACK );
+}
+
+//
+uint8_t SoftI2CMaster::readLast()
+{
+    return i2c_read( I2C_NAK );
+}
 //--------------------------------------------------------------------
 
 
@@ -323,20 +341,4 @@ uint8_t SoftI2CMaster::i2c_read( uint8_t ack )
     return res;
 }
 
-// FIXME: this isn't right, surely
-uint8_t SoftI2CMaster::read( uint8_t ack )
-{
-  return i2c_read( ack );
-}
 
-//
-uint8_t SoftI2CMaster::read()
-{
-    return i2c_read( I2C_ACK );
-}
-
-//
-uint8_t SoftI2CMaster::readLast()
-{
-    return i2c_read( I2C_NAK );
-}
