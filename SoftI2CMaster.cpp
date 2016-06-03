@@ -201,22 +201,18 @@ void SoftI2CMaster::i2c_writebit( uint8_t c )
     i2c_scl_lo();
     _delay_us(i2cbitdelay);
 
-    //if ( c > 0 ) {
-    //    i2c_sda_lo();
-    //}
-    //_delay_us(i2cbitdelay);
 }
 
 //
 uint8_t SoftI2CMaster::i2c_readbit(void)
 {
-    i2c_sda_hi();
+    i2c_sda_hi();   // also set sda as an input
     i2c_scl_hi();
     _delay_us(i2cbitdelay);
 
     uint8_t port = digitalPinToPort(_sdaPin);
     volatile uint8_t* pinReg = portInputRegister(port);
-    i2c_sda_release();  // normalement on l'a deja!
+    //i2c_sda_release();  // normalement on l'a deja!
 
     uint8_t c = *pinReg;  // I2C_PIN;
 
