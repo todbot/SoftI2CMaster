@@ -11,18 +11,15 @@
  *
  */
 
-#if (ARDUINO >= 100)
+
 #include <Arduino.h>
-#else
-#include <WProgram.h>
-#endif
 
 #include "SoftI2CMaster.h"
 
 #include <util/delay.h>
 #include <string.h>
 
-#define  i2cbitdelay 50
+#define  i2cbitdelay 150
 
 #define  I2C_ACK  1 
 #define  I2C_NAK  0
@@ -75,6 +72,11 @@ SoftI2CMaster::SoftI2CMaster(uint8_t sclPin, uint8_t sdaPin, uint8_t pullups)
     i2c_init();
 }
 
+bool SoftI2CMaster::available()
+{
+    return true;
+}
+
 //
 // Turn Arduino pin numbers into PORTx, DDRx, and PINx
 //
@@ -106,7 +108,7 @@ void SoftI2CMaster::setPins(uint8_t sclPin, uint8_t sdaPin, uint8_t pullups)
 uint8_t SoftI2CMaster::beginTransmission(uint8_t address)
 {
     i2c_start();
-    uint8_t rc = i2c_write((address<<1) | 0); // clr read bit
+    uint8_t rc = i2c_write((address << 1) | 0); // clr read bit
     return rc;
 }
 
@@ -114,11 +116,16 @@ uint8_t SoftI2CMaster::beginTransmission(uint8_t address)
 uint8_t SoftI2CMaster::requestFrom(uint8_t address)
 {
     i2c_start();
-    uint8_t rc = i2c_write((address<<1) | 1); // set read bit
+    uint8_t rc = i2c_write((address << 1) | 1); // set read bit
     return rc;
 }
 //
 uint8_t SoftI2CMaster::requestFrom(int address)
+{
+    return requestFrom( (uint8_t) address);
+}
+
+uint8_t SoftI2CMaster::requestFrom(uint8_t address, uint8_t l)
 {
     return requestFrom( (uint8_t) address);
 }
@@ -144,35 +151,56 @@ uint8_t SoftI2CMaster::endTransmission(void)
 // or after beginTransmission(address)
 uint8_t SoftI2CMaster::write(uint8_t data)
 {
-    return i2c_write(data);
+     i2c_write(data);
+     return 1;
 }
 
 // must be called in:
 // slave tx event callback
 // or after beginTransmission(address)
-void SoftI2CMaster::write(uint8_t* data, uint8_t quantity)
+uint8_t SoftI2CMaster::write(uint8_t* data, uint8_t quantity)
 {
+    int c = 0;
     for(uint8_t i = 0; i < quantity; ++i){
-        write(data[i]);
+        c+=write(data[i]);
     }
+    return c;
 }
 
 // must be called in:
 // slave tx event callback
 // or after beginTransmission(address)
-void SoftI2CMaster::write(char* data)
+uint8_t SoftI2CMaster::write(char* data)
 {
-    write((uint8_t*)data, strlen(data));
+    return write((uint8_t*)data, strlen(data));
 }
 
 // must be called in:
 // slave tx event callback
 // or after beginTransmission(address)
-void SoftI2CMaster::write(int data)
+uint8_t SoftI2CMaster::write(int data)
 {
-    write((uint8_t)data);
+    return write((uint8_t)data);
 }
 
+
+// FIXME: this isn't right, surely
+uint8_t SoftI2CMaster::read( uint8_t ack )
+{
+  return i2c_read( ack );
+}
+
+//
+uint8_t SoftI2CMaster::read()
+{
+    return i2c_read( I2C_ACK );
+}
+
+//
+uint8_t SoftI2CMaster::readLast()
+{
+    return i2c_read( I2C_NAK );
+}
 //--------------------------------------------------------------------
 
 
@@ -183,6 +211,7 @@ void SoftI2CMaster::i2c_writebit( uint8_t c )
     } else {
         i2c_sda_lo();
     }
+    _delay_us(i2cbitdelay);
 
     i2c_scl_hi();
     _delay_us(i2cbitdelay);
@@ -190,21 +219,19 @@ void SoftI2CMaster::i2c_writebit( uint8_t c )
     i2c_scl_lo();
     _delay_us(i2cbitdelay);
 
-    if ( c > 0 ) {
-        i2c_sda_lo();
-    }
-    _delay_us(i2cbitdelay);
 }
 
 //
 uint8_t SoftI2CMaster::i2c_readbit(void)
 {
-    i2c_sda_hi();
+    i2c_sda_hi();   // also set sda as an input
     i2c_scl_hi();
     _delay_us(i2cbitdelay);
 
     uint8_t port = digitalPinToPort(_sdaPin);
     volatile uint8_t* pinReg = portInputRegister(port);
+    //i2c_sda_release();  // normalement on l'a deja!
+
     uint8_t c = *pinReg;  // I2C_PIN;
 
     i2c_scl_lo();
@@ -242,6 +269,8 @@ void SoftI2CMaster::i2c_start(void)
 
     i2c_scl_lo();
     _delay_us(i2cbitdelay);
+
+
 }
 
 void SoftI2CMaster::i2c_repstart(void)
@@ -269,6 +298,9 @@ void SoftI2CMaster::i2c_repstart(void)
 //
 void SoftI2CMaster::i2c_stop(void)
 {
+    i2c_sda_lo();
+    _delay_us(i2cbitdelay);
+    
     i2c_scl_hi();
     _delay_us(i2cbitdelay);
 
@@ -309,20 +341,4 @@ uint8_t SoftI2CMaster::i2c_read( uint8_t ack )
     return res;
 }
 
-// FIXME: this isn't right, surely
-uint8_t SoftI2CMaster::read( uint8_t ack )
-{
-  return i2c_read( ack );
-}
 
-//
-uint8_t SoftI2CMaster::read()
-{
-    return i2c_read( I2C_ACK );
-}
-
-//
-uint8_t SoftI2CMaster::readLast()
-{
-    return i2c_read( I2C_NAK );
-}
