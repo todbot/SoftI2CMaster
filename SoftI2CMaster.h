@@ -65,6 +65,8 @@ public:
   void begin(void) {return;};
   uint8_t requestFrom(int address);
   uint8_t requestFrom(uint8_t address);
+  uint8_t requestFrom(int address, int quantity);
+  uint8_t requestFrom(uint8_t address, uint8_t quantity);
   uint8_t read( uint8_t ack );
   uint8_t read();
   uint8_t readLast();

@@ -127,6 +127,24 @@ uint8_t SoftI2CMaster::requestFrom(int address)
 {
     return requestFrom( (uint8_t) address);
 }
+// Added for compatibility with the standard Wire library.
+uint8_t SoftI2CMaster::requestFrom(int address, int quantity)
+{
+    return requestFrom( (uint8_t) address);
+
+    // Ignore 'quantity', since SoftI2CMaster::requestFrom() just sets the start of read adresses,
+    // so it's the same for any number of bytes.
+    (void)quantity;
+}
+// Added for compatibility with the standard Wire library.
+uint8_t SoftI2CMaster::requestFrom(uint8_t address, uint8_t quantity)
+{
+    return requestFrom( (uint8_t) address);
+
+    // Ignore 'quantity', since SoftI2CMaster::requestFrom() just sets the start of read adresses,
+    // so it's the same for any number of bytes.
+    (void)quantity;
+}
 
 //
 uint8_t SoftI2CMaster::beginTransmission(int address)
