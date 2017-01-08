@@ -30,6 +30,12 @@ private:
 
   uint8_t usePullups;
   
+  // 'initialized' will be:
+  //    255 on startup,
+  //    0 if beginTransmission() was called and successful,
+  //    any other value if there was an error during beginTransmission().
+  uint8_t initialized;
+
   // private methods
 
   void i2c_writebit( uint8_t c );
@@ -59,6 +65,8 @@ public:
   void begin(void) {return;};
   uint8_t requestFrom(int address);
   uint8_t requestFrom(uint8_t address);
+  uint8_t requestFrom(int address, int quantity);
+  uint8_t requestFrom(uint8_t address, uint8_t quantity);
   uint8_t read( uint8_t ack );
   uint8_t read();
   uint8_t readLast();

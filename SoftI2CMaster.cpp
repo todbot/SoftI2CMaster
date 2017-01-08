@@ -98,6 +98,7 @@ void SoftI2CMaster::setPins(uint8_t sclPin, uint8_t sdaPin, uint8_t pullups)
     _sdaPortReg  = portOutputRegister(port);
     _sdaDirReg   = portModeRegister(port);
     
+    initialized = 255;
 }
 
 //
@@ -107,6 +108,10 @@ uint8_t SoftI2CMaster::beginTransmission(uint8_t address)
 {
     i2c_start();
     uint8_t rc = i2c_write((address<<1) | 0); // clr read bit
+    // The standard Wire library returns a status in endTransmission(), not beginTransmission().
+    // So we will return the status here but also remember the result so we can return it in endTransmission().
+    // It also allows us to disable other I2C functions until beginTransmission has been called, if we want.
+    initialized = rc;
     return rc;
 }
 
@@ -122,6 +127,24 @@ uint8_t SoftI2CMaster::requestFrom(int address)
 {
     return requestFrom( (uint8_t) address);
 }
+// Added for compatibility with the standard Wire library.
+uint8_t SoftI2CMaster::requestFrom(int address, int quantity)
+{
+    return requestFrom( (uint8_t) address);
+
+    // Ignore 'quantity', since SoftI2CMaster::requestFrom() just sets the start of read adresses,
+    // so it's the same for any number of bytes.
+    (void)quantity;
+}
+// Added for compatibility with the standard Wire library.
+uint8_t SoftI2CMaster::requestFrom(uint8_t address, uint8_t quantity)
+{
+    return requestFrom( (uint8_t) address);
+
+    // Ignore 'quantity', since SoftI2CMaster::requestFrom() just sets the start of read adresses,
+    // so it's the same for any number of bytes.
+    (void)quantity;
+}
 
 //
 uint8_t SoftI2CMaster::beginTransmission(int address)
@@ -135,8 +158,7 @@ uint8_t SoftI2CMaster::beginTransmission(int address)
 uint8_t SoftI2CMaster::endTransmission(void)
 {
     i2c_stop();
-    //return ret;  // FIXME
-    return 0;
+    return initialized;   // Use the result of beginTransmission()
 }
 
 // must be called in:
