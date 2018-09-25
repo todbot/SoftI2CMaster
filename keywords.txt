@@ -1,0 +1,9 @@
+SoftI2CMaster     KEYWORD1
+setPins           KEYWORD2
+beginTransmission KEYWORD2
+endTransmission   KEYWORD2
+write             KEYWORD2
+begin             KEYWORD2
+requestFrom       KEYWORD2
+read              KEYWORD2
+readLast          KEYWORD2
