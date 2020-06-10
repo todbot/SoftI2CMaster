@@ -10,11 +10,12 @@
 #define SoftI2CMaster_h
 
 #include <inttypes.h>
+#include <Wire.h>
 
 #define _SOFTI2CMASTER_VERSION 13  // software version of this library
 
 
-class SoftI2CMaster
+class SoftI2CMaster : public TwoWire
 {
 
 private:
@@ -58,7 +59,7 @@ public:
   uint8_t beginTransmission(uint8_t address);
   uint8_t beginTransmission(int address);
   uint8_t endTransmission(void);
-  uint8_t write(uint8_t);
+  size_t write(uint8_t);
   void write(uint8_t*, uint8_t);
   void write(int);
   void write(char*);
@@ -67,8 +68,8 @@ public:
   uint8_t requestFrom(uint8_t address);
   uint8_t requestFrom(int address, int quantity);
   uint8_t requestFrom(uint8_t address, uint8_t quantity);
-  uint8_t read( uint8_t ack );
-  uint8_t read();
+  int read( uint8_t ack );
+  int read();
   uint8_t readLast();
 
 };

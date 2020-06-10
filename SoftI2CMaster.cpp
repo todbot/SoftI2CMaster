@@ -1,7 +1,7 @@
 /*
  * SoftI2CMaster.cpp -- Multi-instance software I2C Master library
- * 
- * 
+ *
+ *
  * 2010-12 Tod E. Kurt, http://todbot.com/blog/
  *
  * This code takes some tricks from:
@@ -24,7 +24,7 @@
 
 #define  i2cbitdelay 50
 
-#define  I2C_ACK  1 
+#define  I2C_ACK  1
 #define  I2C_NAK  0
 
 
@@ -36,22 +36,22 @@
 // sets SCL low and drives output
 #define i2c_scl_lo()                                 \
                      *_sclPortReg  &=~ _sclBitMask;  \
-                     *_sclDirReg   |=  _sclBitMask; 
+                     *_sclDirReg   |=  _sclBitMask;
 
 // sets SDA low and drives output
 #define i2c_sda_lo()                                 \
                      *_sdaPortReg  &=~ _sdaBitMask;  \
-                     *_sdaDirReg   |=  _sdaBitMask;  
+                     *_sdaDirReg   |=  _sdaBitMask;
 
 // set SCL high and to input (releases pin) (i.e. change to input,turnon pullup)
 #define i2c_scl_hi()                                 \
                      *_sclDirReg   &=~ _sclBitMask;  \
-    if(usePullups) { *_sclPortReg  |=  _sclBitMask; } 
+    if(usePullups) { *_sclPortReg  |=  _sclBitMask; }
 
 // set SDA high and to input (releases pin) (i.e. change to input,turnon pullup)
 #define i2c_sda_hi()                                 \
                      *_sdaDirReg   &=~ _sdaBitMask;  \
-    if(usePullups) { *_sdaPortReg  |=  _sdaBitMask; } 
+    if(usePullups) { *_sdaPortReg  |=  _sdaBitMask; }
 
 
 //
@@ -62,7 +62,7 @@ SoftI2CMaster::SoftI2CMaster()
     // do nothing, use setPins() later
 }
 //
-SoftI2CMaster::SoftI2CMaster(uint8_t sclPin, uint8_t sdaPin) 
+SoftI2CMaster::SoftI2CMaster(uint8_t sclPin, uint8_t sdaPin)
 {
     setPins(sclPin, sdaPin, true);
     i2c_init();
@@ -81,15 +81,15 @@ SoftI2CMaster::SoftI2CMaster(uint8_t sclPin, uint8_t sdaPin, uint8_t pullups)
 void SoftI2CMaster::setPins(uint8_t sclPin, uint8_t sdaPin, uint8_t pullups)
 {
     uint8_t port;
-    
+
     usePullups = pullups;
 
     _sclPin = sclPin;
     _sdaPin = sdaPin;
-    
+
     _sclBitMask = digitalPinToBitMask(sclPin);
     _sdaBitMask = digitalPinToBitMask(sdaPin);
-    
+
     port = digitalPinToPort(sclPin);
     _sclPortReg  = portOutputRegister(port);
     _sclDirReg   = portModeRegister(port);
@@ -97,7 +97,7 @@ void SoftI2CMaster::setPins(uint8_t sclPin, uint8_t sdaPin, uint8_t pullups)
     port = digitalPinToPort(sdaPin);
     _sdaPortReg  = portOutputRegister(port);
     _sdaDirReg   = portModeRegister(port);
-    
+
     initialized = 255;
 }
 
@@ -164,7 +164,7 @@ uint8_t SoftI2CMaster::endTransmission(void)
 // must be called in:
 // slave tx event callback
 // or after beginTransmission(address)
-uint8_t SoftI2CMaster::write(uint8_t data)
+size_t SoftI2CMaster::write(uint8_t data)
 {
     return i2c_write(data);
 }
@@ -243,7 +243,7 @@ void SoftI2CMaster::i2c_init(void)
     //*_sclPortReg &=~ (_sdaBitMask | _sclBitMask);
     i2c_sda_hi();
     i2c_scl_hi();
-    
+
     _delay_us(i2cbitdelay);
 }
 
@@ -258,7 +258,7 @@ void SoftI2CMaster::i2c_start(void)
     i2c_scl_hi();
 
     _delay_us(i2cbitdelay);
-   
+
     i2c_sda_lo();
     _delay_us(i2cbitdelay);
 
@@ -318,7 +318,7 @@ uint8_t SoftI2CMaster::i2c_read( uint8_t ack )
 
     for ( uint8_t i=0;i<8;i++) {
         res <<= 1;
-        res |= i2c_readbit();  
+        res |= i2c_readbit();
     }
 
     if ( ack )
@@ -332,13 +332,13 @@ uint8_t SoftI2CMaster::i2c_read( uint8_t ack )
 }
 
 // FIXME: this isn't right, surely
-uint8_t SoftI2CMaster::read( uint8_t ack )
+int SoftI2CMaster::read( uint8_t ack )
 {
   return i2c_read( ack );
 }
 
 //
-uint8_t SoftI2CMaster::read()
+int SoftI2CMaster::read()
 {
     return i2c_read( I2C_ACK );
 }
